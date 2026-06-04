@@ -7,6 +7,7 @@ import { recordResult } from "./statsStorage";
 
 const CALORIE_CLOSE_RANGE = 300;
 const PROTEIN_CLOSE_RANGE = 20;
+const PLAYED_DATE_KEY = "weightle.playedDate";
 
 type NumericProximity = "exact" | "close" | "far";
 
@@ -52,6 +53,15 @@ export default function App() {
     return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
   };
 
+  const markPlayedToday = (date: string) => {
+    try {
+      localStorage.setItem(PLAYED_DATE_KEY, date);
+    } catch (e) {
+      console.error("Failed to persist played date", e);
+    }
+    setHasPlayedToday(true);
+  };
+
   // Initialize game
   const initGame = () => {
     setTargetFood(pickDailyFood());
@@ -59,12 +69,15 @@ export default function App() {
     setInputValue("");
     setGameOver(null);
     setShowEndModal(false);
-    setHasPlayedToday(false);
     setSuggestions([]);
     setHighlightedIndex(-1);
   };
 
   useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+    const storedDate = localStorage.getItem(PLAYED_DATE_KEY);
+    const playedToday = storedDate === today;
+    setHasPlayedToday(playedToday);
     initGame();
     setTimeUntilReset(calculateTimeUntilReset());
   }, []);
@@ -85,6 +98,11 @@ export default function App() {
       if (today !== currentDate) {
         setCurrentDate(today);
         setHasPlayedToday(false);
+        try {
+          localStorage.removeItem(PLAYED_DATE_KEY);
+        } catch (e) {
+          console.error("Failed to clear played date", e);
+        }
         initGame();
       }
     };
@@ -112,7 +130,7 @@ export default function App() {
   }, [inputValue, guesses, gameOver]);
 
   const handleGuess = (food: Food) => {
-    if (gameOver) return;
+    if (gameOver || hasPlayedToday) return;
 
     const newGuesses = [food, ...guesses]; // Newest on top
     setGuesses(newGuesses);
@@ -122,13 +140,13 @@ export default function App() {
 
     if (food.name === targetFood?.name) {
       setGameOver("win");
-      setHasPlayedToday(true);
+      markPlayedToday(currentDate);
       setShowEndModal(true);
       setShowStats(true);
       recordResult(currentDate, newGuesses.length, true);
     } else if (newGuesses.length >= 8) {
       setGameOver("lose");
-      setHasPlayedToday(true);
+      markPlayedToday(currentDate);
       setShowEndModal(true);
       setShowStats(true);
       recordResult(currentDate, newGuesses.length, false);
@@ -136,9 +154,9 @@ export default function App() {
   };
 
   const handleGiveUp = () => {
-    if (gameOver || guesses.length === 0) return;
+    if (gameOver || hasPlayedToday || guesses.length === 0) return;
     setGameOver("lose");
-    setHasPlayedToday(true);
+    markPlayedToday(currentDate);
     setShowEndModal(true);
     setShowStats(true);
     setSuggestions([]);
@@ -267,7 +285,7 @@ export default function App() {
       </header>
 
       {/* Input / Autocomplete Section */}
-      {!gameOver && (
+      {!gameOver && !hasPlayedToday && (
         <div className="search-container">
           <input
             type="text"
@@ -295,9 +313,9 @@ export default function App() {
       )}
 
       {/* Game Played Today Message */}
-      {hasPlayedToday && gameOver && (
+      {hasPlayedToday && (
         <div className="played-today-message">
-          <p>You've played today! Come back tomorrow for the next puzzle.</p>
+          <p>You've already completed today's puzzle. Come back tomorrow for the next one.</p>
         </div>
       )}
 
