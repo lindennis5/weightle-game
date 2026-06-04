@@ -120,7 +120,7 @@ export default function App() {
   };
 
   const handleGiveUp = () => {
-    if (gameOver) return;
+    if (gameOver || guesses.length === 0) return;
     setGameOver("lose");
     setSuggestions([]);
   };
@@ -228,7 +228,7 @@ export default function App() {
           <strong>{8 - guesses.length}</strong>
         </p>
         <div className="header-actions">
-          {!gameOver && (
+          {!gameOver && guesses.length > 0 && (
             <button className="give-up-btn" onClick={handleGiveUp}>
               Give Up
             </button>
