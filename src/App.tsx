@@ -144,7 +144,22 @@ export default function App() {
   return (
     <div className="game-container">
       <header>
-        <h1>Weightle</h1>
+        <div className="title-container">
+          <h1>Weightle</h1>
+          <div className="help-icon-wrapper" aria-label="How to play">
+            <div className="help-icon" aria-hidden="true">❓</div>
+            <div className="tooltip-content">
+              <h3>How to Play</h3>
+              <p>Guess the mystery food item in 8 tries!</p>
+              <hr />
+              <ul>
+                <li>🟩 <strong>Green:</strong> Perfect match!</li>
+                <li>🟥 <strong>Red:</strong> Incorrect category or restaurant.</li>
+                <li>🟨 <strong>Yellow + Arrow:</strong> Close! The target number is higher (↑) or lower (↓).</li>
+              </ul>
+            </div>
+          </div>
+        </div>
         <p>Guess the chain-restaurant food item! Guesses remaining: <strong>{8 - guesses.length}</strong></p>
       </header>
 
