@@ -1,38 +1,38 @@
 // src/App.tsx
-import React, { useState, useEffect, useRef } from 'react';
-import { foods, pickRandomFood, type Food } from './foods';
-import './App.css';
+import React, { useState, useEffect, useRef } from "react";
+import { foods, pickRandomFood, type Food } from "./foods";
+import "./App.css";
 
 const CALORIE_CLOSE_RANGE = 300;
 const PROTEIN_CLOSE_RANGE = 20;
 
-type NumericProximity = 'exact' | 'close' | 'far';
+type NumericProximity = "exact" | "close" | "far";
 
 function getNumericProximity(
   guess: number,
   target: number,
   closeRange: number,
 ): NumericProximity {
-  if (guess === target) return 'exact';
-  if (Math.abs(guess - target) <= closeRange) return 'close';
-  return 'far';
+  if (guess === target) return "exact";
+  if (Math.abs(guess - target) <= closeRange) return "close";
+  return "far";
 }
 
 export default function App() {
   const [targetFood, setTargetFood] = useState<Food | null>(null);
   const [guesses, setGuesses] = useState<Food[]>([]);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState<Food[]>([]);
-  const [gameOver, setGameOver] = useState<'win' | 'lose' | null>(null);
+  const [gameOver, setGameOver] = useState<"win" | "lose" | null>(null);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
-  
+
   const suggestionsRef = useRef<HTMLUListElement>(null);
 
   // Initialize game
   const initGame = () => {
     setTargetFood(pickRandomFood());
     setGuesses([]);
-    setInputValue('');
+    setInputValue("");
     setGameOver(null);
     setSuggestions([]);
     setHighlightedIndex(-1);
@@ -44,17 +44,18 @@ export default function App() {
 
   // Handle Autocomplete Logic
   useEffect(() => {
-    if (inputValue.trim() === '' || gameOver) {
+    if (inputValue.trim() === "" || gameOver) {
       setSuggestions([]);
       return;
     }
 
-    const filtered = foods.filter(food =>
-      food.name.toLowerCase().includes(inputValue.toLowerCase()) &&
-      !guesses.some(g => g.name === food.name) // Don't suggest already guessed items
+    const filtered = foods.filter(
+      (food) =>
+        food.name.toLowerCase().includes(inputValue.toLowerCase()) &&
+        !guesses.some((g) => g.name === food.name), // Don't suggest already guessed items
     );
     setSuggestions(filtered);
-    setHighlightedIndex(prev => Math.min(prev, filtered.length - 1));
+    setHighlightedIndex((prev) => Math.min(prev, filtered.length - 1));
   }, [inputValue, guesses, gameOver]);
 
   const handleGuess = (food: Food) => {
@@ -62,14 +63,14 @@ export default function App() {
 
     const newGuesses = [food, ...guesses]; // Newest on top
     setGuesses(newGuesses);
-    setInputValue('');
+    setInputValue("");
     setSuggestions([]);
     setHighlightedIndex(-1);
 
     if (food.name === targetFood?.name) {
-      setGameOver('win');
+      setGameOver("win");
     } else if (newGuesses.length >= 8) {
-      setGameOver('lose');
+      setGameOver("lose");
     }
   };
 
@@ -77,20 +78,22 @@ export default function App() {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (suggestions.length === 0) return;
 
-    if (e.key === 'ArrowDown') {
+    if (e.key === "ArrowDown") {
       e.preventDefault();
-      setHighlightedIndex(prev => (prev + 1) % suggestions.length);
-    } else if (e.key === 'ArrowUp') {
+      setHighlightedIndex((prev) => (prev + 1) % suggestions.length);
+    } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      setHighlightedIndex(prev => (prev - 1 + suggestions.length) % suggestions.length);
-    } else if (e.key === 'Enter') {
+      setHighlightedIndex(
+        (prev) => (prev - 1 + suggestions.length) % suggestions.length,
+      );
+    } else if (e.key === "Enter") {
       e.preventDefault();
       if (highlightedIndex >= 0 && highlightedIndex < suggestions.length) {
         handleGuess(suggestions[highlightedIndex]);
       } else if (suggestions.length > 0) {
         handleGuess(suggestions[0]); // Default to first match
       }
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       setSuggestions([]);
     }
   };
@@ -103,14 +106,14 @@ export default function App() {
   ) => {
     const proximity = getNumericProximity(guessVal, targetVal, closeRange);
     const display = unit ? `${guessVal}${unit}` : String(guessVal);
-    const arrow =
-      guessVal < targetVal ? '↑' : guessVal > targetVal ? '↓' : '';
+    const arrow = guessVal < targetVal ? "↑" : guessVal > targetVal ? "↓" : "";
 
-    if (proximity === 'exact') {
+    if (proximity === "exact") {
       return <td className="cell exact">{display}</td>;
     }
 
-    const className = proximity === 'close' ? 'cell close' : 'cell higher-lower';
+    const className =
+      proximity === "close" ? "cell close" : "cell higher-lower";
     return (
       <td className={className}>
         {display} {arrow}
@@ -121,17 +124,17 @@ export default function App() {
   const renderMatchCell = (
     guessVal: string,
     targetVal: string,
-    field: 'category' | 'restaurant',
+    field: "category" | "restaurant",
   ) => {
     const isMatch = guessVal.toLowerCase() === targetVal.toLowerCase();
     return (
       <td
-        className={`cell match-cell ${isMatch ? 'match-cell--correct' : 'match-cell--incorrect'}`}
-        aria-label={`${field} ${isMatch ? 'correct' : 'incorrect'}`}
+        className={`cell match-cell ${isMatch ? "match-cell--correct" : "match-cell--incorrect"}`}
+        aria-label={`${field} ${isMatch ? "correct" : "incorrect"}`}
       >
         <div className="match-cell__inner">
           <span className="match-cell__icon" aria-hidden="true">
-            {isMatch ? '✓' : '✗'}
+            {isMatch ? "✓" : "✗"}
           </span>
           <span className="match-cell__value">{guessVal}</span>
         </div>
@@ -144,23 +147,11 @@ export default function App() {
   return (
     <div className="game-container">
       <header>
-        <div className="title-container">
-          <h1>Weightle</h1>
-          <div className="help-icon-wrapper" aria-label="How to play">
-            <div className="help-icon" aria-hidden="true">❓</div>
-            <div className="tooltip-content">
-              <h3>How to Play</h3>
-              <p>Guess the mystery food item in 8 tries!</p>
-              <hr />
-              <ul>
-                <li>🟩 <strong>Green:</strong> Perfect match!</li>
-                <li>🟥 <strong>Red:</strong> Incorrect category or restaurant.</li>
-                <li>🟨 <strong>Yellow + Arrow:</strong> Close! The target number is higher (↑) or lower (↓).</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <p>Guess the chain-restaurant food item! Guesses remaining: <strong>{8 - guesses.length}</strong></p>
+        <h1>Weightle</h1>
+        <p>
+          Guess the chain-restaurant food item! Guesses remaining:{" "}
+          <strong>{8 - guesses.length}</strong>
+        </p>
       </header>
 
       {/* Input / Autocomplete Section */}
@@ -179,10 +170,11 @@ export default function App() {
               {suggestions.map((food, index) => (
                 <li
                   key={food.name}
-                  className={index === highlightedIndex ? 'active' : ''}
+                  className={index === highlightedIndex ? "active" : ""}
                   onClick={() => handleGuess(food)}
                 >
-                  {food.name} <span className="subtext">({food.restaurant})</span>
+                  {food.name}{" "}
+                  <span className="subtext">({food.restaurant})</span>
                 </li>
               ))}
             </ul>
@@ -206,9 +198,7 @@ export default function App() {
                 <th>Food Name</th>
                 <th title="Yellow = within 300 cal of answer">Calories</th>
                 <th title="Yellow = within 20 g of answer">Protein (g)</th>
-                <th title="Green = same category, red = different">
-                  Category
-                </th>
+                <th title="Green = same category, red = different">Category</th>
                 <th title="Green = same restaurant, red = different">
                   Restaurant
                 </th>
@@ -218,7 +208,7 @@ export default function App() {
               {guesses.map((guess, idx) => (
                 <tr key={idx} className="fade-in">
                   <td
-                    className={`cell name-cell ${guess.name === targetFood.name ? 'exact' : ''}`}
+                    className={`cell name-cell ${guess.name === targetFood.name ? "exact" : ""}`}
                   >
                     {guess.name}
                   </td>
@@ -231,13 +221,17 @@ export default function App() {
                     guess.protein,
                     targetFood.protein,
                     PROTEIN_CLOSE_RANGE,
-                    'g',
+                    "g",
                   )}
-                  {renderMatchCell(guess.category, targetFood.category, 'category')}
+                  {renderMatchCell(
+                    guess.category,
+                    targetFood.category,
+                    "category",
+                  )}
                   {renderMatchCell(
                     guess.restaurant,
                     targetFood.restaurant,
-                    'restaurant',
+                    "restaurant",
                   )}
                 </tr>
               ))}
@@ -250,7 +244,7 @@ export default function App() {
       {gameOver && (
         <div className="modal-overlay">
           <div className="modal-content">
-            {gameOver === 'win' ? (
+            {gameOver === "win" ? (
               <h2 className="win-title">🎉 You Win! 🎉</h2>
             ) : (
               <h2 className="lose-title">💀 Game Over 💀</h2>
@@ -258,10 +252,16 @@ export default function App() {
             <p>The answer was:</p>
             <div className="target-reveal">
               <h3>{targetFood.name}</h3>
-              <p>{targetFood.restaurant} • {targetFood.category}</p>
-              <p>{targetFood.calories} Calories | {targetFood.protein}g Protein</p>
+              <p>
+                {targetFood.restaurant} • {targetFood.category}
+              </p>
+              <p>
+                {targetFood.calories} Calories | {targetFood.protein}g Protein
+              </p>
             </div>
-            <button className="restart-btn" onClick={initGame}>Play Again</button>
+            <button className="restart-btn" onClick={initGame}>
+              Play Again
+            </button>
           </div>
         </div>
       )}
