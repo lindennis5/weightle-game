@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { foods, pickDailyFood, type Food } from "./foods";
 import "./App.css";
+import Stats from "./Stats";
+import { recordResult } from "./statsStorage";
 
 const CALORIE_CLOSE_RANGE = 300;
 const PROTEIN_CLOSE_RANGE = 20;
@@ -29,6 +31,9 @@ export default function App() {
     new Date().toISOString().split("T")[0],
   );
   const [timeUntilReset, setTimeUntilReset] = useState("");
+  const [showStats, setShowStats] = useState(false);
+  const [showEndModal, setShowEndModal] = useState(false);
+  const [hasPlayedToday, setHasPlayedToday] = useState(false);
 
   const suggestionsRef = useRef<HTMLUListElement>(null);
 
@@ -53,6 +58,8 @@ export default function App() {
     setGuesses([]);
     setInputValue("");
     setGameOver(null);
+    setShowEndModal(false);
+    setHasPlayedToday(false);
     setSuggestions([]);
     setHighlightedIndex(-1);
   };
@@ -77,6 +84,7 @@ export default function App() {
       const today = new Date().toISOString().split("T")[0];
       if (today !== currentDate) {
         setCurrentDate(today);
+        setHasPlayedToday(false);
         initGame();
       }
     };
@@ -114,15 +122,27 @@ export default function App() {
 
     if (food.name === targetFood?.name) {
       setGameOver("win");
+      setHasPlayedToday(true);
+      setShowEndModal(true);
+      setShowStats(true);
+      recordResult(currentDate, newGuesses.length, true);
     } else if (newGuesses.length >= 8) {
       setGameOver("lose");
+      setHasPlayedToday(true);
+      setShowEndModal(true);
+      setShowStats(true);
+      recordResult(currentDate, newGuesses.length, false);
     }
   };
 
   const handleGiveUp = () => {
     if (gameOver || guesses.length === 0) return;
     setGameOver("lose");
+    setHasPlayedToday(true);
+    setShowEndModal(true);
+    setShowStats(true);
     setSuggestions([]);
+    recordResult(currentDate, guesses.length, false);
   };
 
   // Keyboard navigation for autocomplete
@@ -233,6 +253,13 @@ export default function App() {
               Give Up
             </button>
           )}
+          <button
+            className="stats-btn"
+            onClick={() => setShowStats(true)}
+            aria-label="Open stats"
+          >
+            Stats
+          </button>
           <p className="timer-text">
             Next puzzle in: <strong>{timeUntilReset}</strong>
           </p>
@@ -264,6 +291,13 @@ export default function App() {
               ))}
             </ul>
           )}
+        </div>
+      )}
+
+      {/* Game Played Today Message */}
+      {hasPlayedToday && gameOver && (
+        <div className="played-today-message">
+          <p>You've played today! Come back tomorrow for the next puzzle.</p>
         </div>
       )}
 
@@ -326,7 +360,7 @@ export default function App() {
       )}
 
       {/* Win / Lose Modals */}
-      {gameOver && (
+      {gameOver && showEndModal && (
         <div className="modal-overlay">
           <div className="modal-content">
             {gameOver === "win" ? (
@@ -344,8 +378,8 @@ export default function App() {
                 {targetFood.calories} Calories | {targetFood.protein}g Protein
               </p>
             </div>
-            <button className="restart-btn" onClick={initGame}>
-              Play Again
+            <button className="restart-btn" onClick={() => setShowEndModal(false)}>
+              Close
             </button>
           </div>
         </div>
@@ -395,6 +429,31 @@ export default function App() {
           dennisdlin
         </a>
       </footer>
+      {showStats && <Stats onClose={() => setShowStats(false)} />}
+      {gameOver && showEndModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            {gameOver === "win" ? (
+              <h2 className="win-title">🎉 You Win! 🎉</h2>
+            ) : (
+              <h2 className="lose-title">💀 Game Over 💀</h2>
+            )}
+            <p>The answer was:</p>
+            <div className="target-reveal">
+              <h3>{targetFood.name}</h3>
+              <p>
+                {targetFood.restaurant} • {targetFood.category}
+              </p>
+              <p>
+                {targetFood.calories} Calories | {targetFood.protein}g Protein
+              </p>
+            </div>
+            <button className="restart-btn" onClick={() => setShowEndModal(false)}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
