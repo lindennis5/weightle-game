@@ -1,3 +1,5 @@
+LINK: https://weightle-game.vercel.app/
+
 ## 🎮 How to Play
 
 The objective of **Weightle** is to guess the secret chain-restaurant food item in 8 tries or fewer.
