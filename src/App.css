@@ -572,11 +572,15 @@ td.cell.higher-lower {
 }
 .stats-row {
   display: grid;
-  grid-template-columns: 160px 1fr;
+  grid-template-columns: 160px 240px 1fr;
   gap: 12px;
   align-items: center;
   padding: 8px 0;
   border-bottom: 1px solid #27272a;
+}
+.stats-answer {
+  color: var(--text-main);
+  font-weight: 600;
 }
 .stats-header {
   color: var(--text-muted);

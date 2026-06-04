@@ -143,13 +143,13 @@ export default function App() {
       markPlayedToday(currentDate);
       setShowEndModal(true);
       setShowStats(true);
-      recordResult(currentDate, newGuesses.length, true);
+      recordResult(currentDate, newGuesses.length, true, food.name);
     } else if (newGuesses.length >= 8) {
       setGameOver("lose");
       markPlayedToday(currentDate);
       setShowEndModal(true);
       setShowStats(true);
-      recordResult(currentDate, newGuesses.length, false);
+      recordResult(currentDate, newGuesses.length, false, targetFood?.name ?? "");
     }
   };
 
@@ -160,7 +160,7 @@ export default function App() {
     setShowEndModal(true);
     setShowStats(true);
     setSuggestions([]);
-    recordResult(currentDate, guesses.length, false);
+    recordResult(currentDate, guesses.length, false, targetFood?.name ?? "");
   };
 
   // Keyboard navigation for autocomplete

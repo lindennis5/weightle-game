@@ -3,6 +3,7 @@ const STORAGE_KEY = "weightle.results";
 export type GameRecord = {
   attempts: number;
   win: boolean;
+  answer: string;
 };
 
 export type DayRecord = {
@@ -36,11 +37,11 @@ export function getAllResults(): DayRecord[] {
     .map((date) => ({ date, games: raw[date] }));
 }
 
-export function recordResult(date: string, attempts: number, win: boolean) {
+export function recordResult(date: string, attempts: number, win: boolean, answer: string) {
   if (!date) return;
   const raw = readRaw();
   raw[date] = raw[date] || [];
-  raw[date].push({ attempts, win });
+  raw[date].push({ attempts, win, answer });
   writeRaw(raw);
 }
 

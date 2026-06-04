@@ -65,6 +65,7 @@ export default function Stats({ onClose }: Props) {
             <div className="stats-table">
               <div className="stats-row stats-header">
                 <div>Date</div>
+                <div>Answer</div>
                 <div>Distribution</div>
               </div>
               {days.map((d) => {
@@ -77,9 +78,11 @@ export default function Stats({ onClose }: Props) {
                 });
                 const max = Math.max(...buckets, 1);
 
+                const answer = d.games[0]?.answer ?? "-";
                 return (
                   <div className="stats-row" key={d.date}>
                     <div className="stats-date">{d.date}</div>
+                    <div className="stats-answer">{answer}</div>
                     <div className="stats-dist">
                       <div className="dist-labels">
                         <span className="loss-label">L</span>
