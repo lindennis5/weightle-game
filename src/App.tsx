@@ -7,6 +7,8 @@ import { recordResult } from "./statsStorage";
 
 const CALORIE_CLOSE_RANGE = 300;
 const PROTEIN_CLOSE_RANGE = 20;
+const CARBS_CLOSE_RANGE = 12;
+const FAT_CLOSE_RANGE = 8;
 const PLAYED_DATE_KEY = "weightle.playedDate";
 
 type NumericProximity = "exact" | "close" | "far";
@@ -202,7 +204,7 @@ export default function App() {
     }
 
     const className =
-      proximity === "close" ? "cell close" : "cell higher-lower";
+      proximity === "close" ? "cell close" : "cell wrong";
     return (
       <td className={className}>
         {display} {arrow}
@@ -213,7 +215,7 @@ export default function App() {
   const renderMatchCell = (
     guessVal: string,
     targetVal: string,
-    field: "category" | "restaurant",
+    field: "category" | "restaurant" | "subCategory",
   ) => {
     const isMatch = guessVal.toLowerCase() === targetVal.toLowerCase();
     return (
@@ -327,6 +329,9 @@ export default function App() {
               <col className="col-name" />
               <col className="col-numeric" />
               <col className="col-numeric" />
+              <col className="col-numeric" />
+              <col className="col-numeric" />
+              <col className="col-match" />
               <col className="col-match" />
               <col className="col-match" />
             </colgroup>
@@ -335,7 +340,10 @@ export default function App() {
                 <th>Food Name</th>
                 <th title="Yellow = within 300 cal of answer">Calories</th>
                 <th title="Yellow = within 20 g of answer">Protein (g)</th>
+                <th title="Yellow = within 20 g of answer">Carbs (g)</th>
+                <th title="Yellow = within 10 g of answer">Fat (g)</th>
                 <th title="Green = same category, red = different">Category</th>
+                <th title="Green = same sub-category, red = different">Subcategory</th>
                 <th title="Green = same restaurant, red = different">
                   Restaurant
                 </th>
@@ -360,10 +368,27 @@ export default function App() {
                     PROTEIN_CLOSE_RANGE,
                     "g",
                   )}
+                  {renderNumericCell(
+                    guess.carbs,
+                    targetFood.carbs,
+                    CARBS_CLOSE_RANGE,
+                    "g",
+                  )}
+                  {renderNumericCell(
+                    guess.fat,
+                    targetFood.fat,
+                    FAT_CLOSE_RANGE,
+                    "g",
+                  )}
                   {renderMatchCell(
                     guess.category,
                     targetFood.category,
                     "category",
+                  )}
+                  {renderMatchCell(
+                    guess.subCategory,
+                    targetFood.subCategory,
+                    "subCategory",
                   )}
                   {renderMatchCell(
                     guess.restaurant,
@@ -390,10 +415,10 @@ export default function App() {
             <div className="target-reveal">
               <h3>{targetFood.name}</h3>
               <p>
-                {targetFood.restaurant} • {targetFood.category}
+                {targetFood.restaurant} • {targetFood.category} • {targetFood.subCategory}
               </p>
               <p>
-                {targetFood.calories} Calories | {targetFood.protein}g Protein
+                {targetFood.calories} Calories | {targetFood.protein}g Protein | {targetFood.carbs}g Carbs | {targetFood.fat}g Fat
               </p>
             </div>
             <button className="restart-btn" onClick={() => setShowEndModal(false)}>
@@ -460,10 +485,10 @@ export default function App() {
             <div className="target-reveal">
               <h3>{targetFood.name}</h3>
               <p>
-                {targetFood.restaurant} • {targetFood.category}
+                {targetFood.restaurant} • {targetFood.category} • {targetFood.subCategory}
               </p>
               <p>
-                {targetFood.calories} Calories | {targetFood.protein}g Protein
+                {targetFood.calories} Calories | {targetFood.protein}g Protein | {targetFood.carbs}g Carbs | {targetFood.fat}g Fat
               </p>
             </div>
             <button className="restart-btn" onClick={() => setShowEndModal(false)}>
