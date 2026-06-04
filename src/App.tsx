@@ -28,8 +28,24 @@ export default function App() {
   const [currentDate, setCurrentDate] = useState(
     new Date().toISOString().split("T")[0],
   );
+  const [timeUntilReset, setTimeUntilReset] = useState("");
 
   const suggestionsRef = useRef<HTMLUListElement>(null);
+
+  // Calculate time until midnight
+  const calculateTimeUntilReset = () => {
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+
+    const diff = tomorrow.getTime() - now.getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  };
 
   // Initialize game
   const initGame = () => {
@@ -43,6 +59,16 @@ export default function App() {
 
   useEffect(() => {
     initGame();
+    setTimeUntilReset(calculateTimeUntilReset());
+  }, []);
+
+  // Update countdown timer every second
+  useEffect(() => {
+    const timerInterval = setInterval(() => {
+      setTimeUntilReset(calculateTimeUntilReset());
+    }, 1000);
+
+    return () => clearInterval(timerInterval);
   }, []);
 
   // Check for date changes and refresh game at midnight
@@ -194,6 +220,9 @@ export default function App() {
         <p>
           Guess the chain-restaurant food item! Guesses remaining:{" "}
           <strong>{8 - guesses.length}</strong>
+        </p>
+        <p className="timer-text">
+          Next puzzle in: <strong>{timeUntilReset}</strong>
         </p>
       </header>
 
