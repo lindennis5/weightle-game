@@ -1,73 +1,27 @@
-# React + TypeScript + Vite
+## 🎮 How to Play
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The objective of **Weightle** is to guess the secret chain-restaurant food item in 8 tries or fewer.
 
-Currently, two official plugins are available:
+1. **Search for an Item:** Start typing a dish name in the auto-complete search bar and select it.
+2. **Analyze the Feedback:** Each guess generates a colored row in the comparison table, comparing your chosen item to the target mystery item:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### 🟩 Green Cell
+An **exact match**! You correctly guessed that specific property (e.g., the exact food name, category, or restaurant).
 
-## React Compiler
+### 🟥 Red Cell
+An **incorrect match**. The target mystery item belongs to a completely different category or restaurant.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 🟨 Yellow Cell with Arrow
+Close! The target item's nutritional number is **higher (↑)** or **lower (↓)** than the item you just guessed.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 📊 Quick Reference Table
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+| Column | Color State | Meaning |
+| :--- | :--- | :--- |
+| **Food Name** | 🟩 Green / 🟥 Red | Correct / Incorrect Name |
+| **Calories** | 🟩 Green / 🟨 Yellow + Arrow | Correct / Target is Higher (↑) or Lower (↓) |
+| **Protein (g)** | 🟩 Green / 🟨 Yellow + Arrow | Correct / Target is Higher (↑) or Lower (↓) |
+| **Category** | 🟩 Green / 🟥 Red | Correct / Incorrect Category (e.g., Burger, Breakfast) |
+| **Restaurant**| 🟩 Green / 🟥 Red | Correct / Incorrect Restaurant chain |
