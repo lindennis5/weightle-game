@@ -119,6 +119,12 @@ export default function App() {
     }
   };
 
+  const handleGiveUp = () => {
+    if (gameOver) return;
+    setGameOver("lose");
+    setSuggestions([]);
+  };
+
   // Keyboard navigation for autocomplete
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (suggestions.length === 0) return;
@@ -221,9 +227,16 @@ export default function App() {
           Guess the chain-restaurant food item! Guesses remaining:{" "}
           <strong>{8 - guesses.length}</strong>
         </p>
-        <p className="timer-text">
-          Next puzzle in: <strong>{timeUntilReset}</strong>
-        </p>
+        <div className="header-actions">
+          {!gameOver && (
+            <button className="give-up-btn" onClick={handleGiveUp}>
+              Give Up
+            </button>
+          )}
+          <p className="timer-text">
+            Next puzzle in: <strong>{timeUntilReset}</strong>
+          </p>
+        </div>
       </header>
 
       {/* Input / Autocomplete Section */}

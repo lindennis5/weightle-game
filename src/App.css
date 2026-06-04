@@ -72,6 +72,34 @@ header p {
   letter-spacing: 0.05em;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.give-up-btn {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    transform 0.1s ease,
+    background-color 0.2s;
+}
+
+.give-up-btn:hover {
+  background-color: #dc2626;
+  transform: scale(1.02);
+}
+
 /* Form & Input Section Alignment */
 .search-container {
   position: relative;
