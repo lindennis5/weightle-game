@@ -1,6 +1,6 @@
 // src/App.tsx
 import React, { useState, useEffect, useRef } from "react";
-import { foods, pickRandomFood, type Food } from "./foods";
+import { foods, pickDailyFood, type Food } from "./foods";
 import "./App.css";
 
 const CALORIE_CLOSE_RANGE = 300;
@@ -25,12 +25,15 @@ export default function App() {
   const [suggestions, setSuggestions] = useState<Food[]>([]);
   const [gameOver, setGameOver] = useState<"win" | "lose" | null>(null);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [currentDate, setCurrentDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
 
   const suggestionsRef = useRef<HTMLUListElement>(null);
 
   // Initialize game
   const initGame = () => {
-    setTargetFood(pickRandomFood());
+    setTargetFood(pickDailyFood());
     setGuesses([]);
     setInputValue("");
     setGameOver(null);
@@ -41,6 +44,22 @@ export default function App() {
   useEffect(() => {
     initGame();
   }, []);
+
+  // Check for date changes and refresh game at midnight
+  useEffect(() => {
+    const checkDateChange = () => {
+      const today = new Date().toISOString().split("T")[0];
+      if (today !== currentDate) {
+        setCurrentDate(today);
+        initGame();
+      }
+    };
+
+    // Check every minute
+    const interval = setInterval(checkDateChange, 60000);
+
+    return () => clearInterval(interval);
+  }, [currentDate]);
 
   // Handle Autocomplete Logic
   useEffect(() => {

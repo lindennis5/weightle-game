@@ -292,3 +292,13 @@ export const foods: Food[] = [
 export function pickRandomFood(): Food {
   return foods[Math.floor(Math.random() * foods.length)]
 }
+
+export function pickDailyFood(): Food {
+  // Get today's date as YYYY-MM-DD
+  const today = new Date().toISOString().split('T')[0]
+  // Convert date string to a number for seeding
+  const seed = today.split('-').reduce((acc, part) => acc + parseInt(part), 0)
+  // Use modulo to get a consistent index for today
+  const index = seed % foods.length
+  return foods[index]
+}
