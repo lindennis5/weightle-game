@@ -159,7 +159,12 @@ export default function App() {
       markPlayedToday(currentDate);
       setShowEndModal(true);
       setShowStats(true);
-      recordResult(currentDate, newGuesses.length, false, targetFood?.name ?? "");
+      recordResult(
+        currentDate,
+        newGuesses.length,
+        false,
+        targetFood?.name ?? "",
+      );
     }
   };
 
@@ -202,19 +207,25 @@ export default function App() {
     targetVal: number,
     closeRange: number,
     unit?: string,
+    delay?: number,
   ) => {
     const proximity = getNumericProximity(guessVal, targetVal, closeRange);
     const display = unit ? `${guessVal}${unit}` : String(guessVal);
     const arrow = guessVal < targetVal ? "↑" : guessVal > targetVal ? "↓" : "";
+    const cellClass =
+      proximity === "exact"
+        ? "cell exact"
+        : proximity === "close"
+          ? "cell close"
+          : "cell wrong";
 
-    if (proximity === "exact") {
-      return <td className="cell exact">{display}</td>;
-    }
-
-    const className =
-      proximity === "close" ? "cell close" : "cell wrong";
     return (
-      <td className={className}>
+      <td
+        className={`${cellClass}${delay !== undefined ? " animate-flip" : ""}`}
+        style={
+          delay !== undefined ? { animationDelay: `${delay}s` } : undefined
+        }
+      >
         {display} {arrow}
       </td>
     );
@@ -224,12 +235,18 @@ export default function App() {
     guessVal: string,
     targetVal: string,
     field: "category" | "restaurant" | "subCategory",
+    delay?: number,
   ) => {
     const isMatch = guessVal.toLowerCase() === targetVal.toLowerCase();
     return (
       <td
-        className={`cell match-cell ${isMatch ? "match-cell--correct" : "match-cell--incorrect"}`}
+        className={`cell match-cell ${
+          isMatch ? "match-cell--correct" : "match-cell--incorrect"
+        }${delay !== undefined ? " animate-flip" : ""}`}
         aria-label={`${field} ${isMatch ? "correct" : "incorrect"}`}
+        style={
+          delay !== undefined ? { animationDelay: `${delay}s` } : undefined
+        }
       >
         <div className="match-cell__inner">
           {isMatch && (
@@ -279,19 +296,21 @@ export default function App() {
         </p>
         <div className="header-actions">
           {!gameOver && guesses.length > 0 && (
-            <button className="give-up-btn" onClick={handleGiveUp}>
+            <button className="control-btn give-up-btn" onClick={handleGiveUp}>
               Give Up
             </button>
           )}
           <button
-            className="stats-btn"
+            className="control-btn stats-btn"
             onClick={() => setShowStats(true)}
             aria-label="Open stats"
           >
             Stats
           </button>
           <p className="timer-text">
-            Next puzzle in: <strong>{timeUntilReset}</strong>
+            <span className="timer-badge">
+              Next puzzle in: <strong>{timeUntilReset}</strong>
+            </span>
           </p>
         </div>
       </header>
@@ -327,7 +346,10 @@ export default function App() {
       {/* Game Played Today Message */}
       {hasPlayedToday && (
         <div className="played-today-message">
-          <p>You've already completed today's puzzle. Come back tomorrow for the next one.</p>
+          <p>
+            You've already completed today's puzzle. Come back tomorrow for the
+            next one.
+          </p>
         </div>
       )}
 
@@ -353,7 +375,9 @@ export default function App() {
                 <th title="Yellow = within 20 g of answer">Carbs</th>
                 <th title="Yellow = within 10 g of answer">Fat</th>
                 <th title="Green = same category, red = different">Category</th>
-                <th title="Green = same sub-category, red = different">Subcategory</th>
+                <th title="Green = same sub-category, red = different">
+                  Subcategory
+                </th>
                 <th title="Green = same restaurant, red = different">
                   Restaurant
                 </th>
@@ -361,9 +385,10 @@ export default function App() {
             </thead>
             <tbody>
               {guesses.map((guess, idx) => (
-                <tr key={idx} className="fade-in">
+                <tr key={idx}>
                   <td
-                    className={`cell name-cell ${guess.name === targetFood.name ? "exact" : ""}`}
+                    className={`cell name-cell ${guess.name === targetFood.name ? "exact" : ""}${idx === 0 ? " animate-flip" : ""}`}
+                    style={idx === 0 ? { animationDelay: "0s" } : undefined}
                   >
                     {guess.name}
                   </td>
@@ -371,39 +396,47 @@ export default function App() {
                     guess.calories,
                     targetFood.calories,
                     CALORIE_CLOSE_RANGE,
+                    undefined,
+                    idx === 0 ? 0.1 : undefined,
                   )}
                   {renderNumericCell(
                     guess.protein,
                     targetFood.protein,
                     PROTEIN_CLOSE_RANGE,
                     "g",
+                    idx === 0 ? 0.2 : undefined,
                   )}
                   {renderNumericCell(
                     guess.carbs,
                     targetFood.carbs,
                     CARBS_CLOSE_RANGE,
                     "g",
+                    idx === 0 ? 0.3 : undefined,
                   )}
                   {renderNumericCell(
                     guess.fat,
                     targetFood.fat,
                     FAT_CLOSE_RANGE,
                     "g",
+                    idx === 0 ? 0.4 : undefined,
                   )}
                   {renderMatchCell(
                     guess.category,
                     targetFood.category,
                     "category",
+                    idx === 0 ? 0.5 : undefined,
                   )}
                   {renderMatchCell(
                     guess.subCategory,
                     targetFood.subCategory,
                     "subCategory",
+                    idx === 0 ? 0.6 : undefined,
                   )}
                   {renderMatchCell(
                     guess.restaurant,
                     targetFood.restaurant,
                     "restaurant",
+                    idx === 0 ? 0.7 : undefined,
                   )}
                 </tr>
               ))}
@@ -425,13 +458,18 @@ export default function App() {
             <div className="target-reveal">
               <h3>{targetFood.name}</h3>
               <p>
-                {targetFood.restaurant} • {targetFood.category} • {targetFood.subCategory}
+                {targetFood.restaurant} • {targetFood.category} •{" "}
+                {targetFood.subCategory}
               </p>
               <p>
-                {targetFood.calories} Calories | {targetFood.protein}g Protein | {targetFood.carbs}g Carbs | {targetFood.fat}g Fat
+                {targetFood.calories} Calories | {targetFood.protein}g Protein |{" "}
+                {targetFood.carbs}g Carbs | {targetFood.fat}g Fat
               </p>
             </div>
-            <button className="restart-btn" onClick={() => setShowEndModal(false)}>
+            <button
+              className="restart-btn"
+              onClick={() => setShowEndModal(false)}
+            >
               Close
             </button>
           </div>
@@ -495,13 +533,18 @@ export default function App() {
             <div className="target-reveal">
               <h3>{targetFood.name}</h3>
               <p>
-                {targetFood.restaurant} • {targetFood.category} • {targetFood.subCategory}
+                {targetFood.restaurant} • {targetFood.category} •{" "}
+                {targetFood.subCategory}
               </p>
               <p>
-                {targetFood.calories} Calories | {targetFood.protein}g Protein | {targetFood.carbs}g Carbs | {targetFood.fat}g Fat
+                {targetFood.calories} Calories | {targetFood.protein}g Protein |{" "}
+                {targetFood.carbs}g Carbs | {targetFood.fat}g Fat
               </p>
             </div>
-            <button className="restart-btn" onClick={() => setShowEndModal(false)}>
+            <button
+              className="restart-btn"
+              onClick={() => setShowEndModal(false)}
+            >
               Close
             </button>
           </div>
