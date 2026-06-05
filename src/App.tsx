@@ -232,9 +232,11 @@ export default function App() {
         aria-label={`${field} ${isMatch ? "correct" : "incorrect"}`}
       >
         <div className="match-cell__inner">
-          <span className="match-cell__icon" aria-hidden="true">
-            {isMatch ? "✓" : "✗"}
-          </span>
+          {isMatch && (
+            <span className="match-cell__icon" aria-hidden="true">
+              ✓
+            </span>
+          )}
           <span className="match-cell__value">{guessVal}</span>
         </div>
       </td>
@@ -346,10 +348,10 @@ export default function App() {
             <thead>
               <tr>
                 <th>Food Name</th>
-                <th title="Yellow = within 300 cal of answer">Calories</th>
-                <th title="Yellow = within 20 g of answer">Protein (g)</th>
-                <th title="Yellow = within 20 g of answer">Carbs (g)</th>
-                <th title="Yellow = within 10 g of answer">Fat (g)</th>
+                    <th title="Yellow = within 300 cal of answer">Calories</th>
+                <th title="Yellow = within 20 g of answer">Protein</th>
+                <th title="Yellow = within 20 g of answer">Carbs</th>
+                <th title="Yellow = within 10 g of answer">Fat</th>
                 <th title="Green = same category, red = different">Category</th>
                 <th title="Green = same sub-category, red = different">Subcategory</th>
                 <th title="Green = same restaurant, red = different">

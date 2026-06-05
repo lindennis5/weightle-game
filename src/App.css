@@ -184,7 +184,7 @@ header p {
   width: 100%;
   margin: 0 auto;
   border-collapse: separate;
-  border-spacing: 6px;
+  border-spacing: 8px;
   table-layout: fixed;
 }
 
@@ -201,13 +201,14 @@ header p {
 }
 
 .guess-table th {
-  color: var(--text-muted);
+  color: #888;
   font-weight: 700;
   padding-bottom: 12px;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.05em;
   text-align: center;
+  white-space: nowrap;
 }
 
 /* Table Card Formatting */
