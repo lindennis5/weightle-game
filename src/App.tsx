@@ -127,8 +127,16 @@ export default function App() {
         food.name.toLowerCase().includes(inputValue.toLowerCase()) &&
         !guesses.some((g) => g.name === food.name), // Don't suggest already guessed items
     );
-    setSuggestions(filtered);
-    setHighlightedIndex((prev) => Math.min(prev, filtered.length - 1));
+
+    const seen = new Set<string>();
+    const uniqueFiltered = filtered.filter((food) => {
+      if (seen.has(food.name)) return false;
+      seen.add(food.name);
+      return true;
+    });
+
+    setSuggestions(uniqueFiltered);
+    setHighlightedIndex((prev) => Math.min(prev, uniqueFiltered.length - 1));
   }, [inputValue, guesses, gameOver]);
 
   const handleGuess = (food: Food) => {
