@@ -1,4 +1,4 @@
-﻿export interface Food {
+export interface Food {
   name: string;
   calories: number;
   protein: number;
@@ -912,16 +912,15 @@ export const foods: Food[] = [
   },
 ];
 
-export function pickRandomFood(): Food {
-  return foods[Math.floor(Math.random() * foods.length)];
+/** Stable identifier: names alone are not unique (e.g. two "Spicy Chicken Sandwich"es). */
+export function foodId(food: Food): string {
+  return `${food.restaurant}::${food.name}`;
 }
 
-export function pickDailyFood(): Food {
-  // Get today's date as YYYY-MM-DD
-  const today = new Date().toISOString().split("T")[0];
-  // Convert date string to a number for seeding
-  const seed = today.split("-").reduce((acc, part) => acc + parseInt(part), 0);
-  // Use modulo to get a consistent index for today
-  const index = seed % foods.length;
-  return foods[index];
+/** The daily answer for a UTC date key (YYYY-MM-DD). */
+export function pickDailyFood(dateKey: string): Food {
+  const seed = dateKey
+    .split("-")
+    .reduce((acc, part) => acc + parseInt(part, 10), 0);
+  return foods[seed % foods.length];
 }
